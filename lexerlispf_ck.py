@@ -9,38 +9,38 @@ def lexer_parser(source):
 
     #making lexer
 
-    lexer = ox.make_lexer([
+    lexer = ox.make_lexer([        
+        ('NUMBER', r'\d+'),
+        ('NAME', r'[-a-zA-Z]+'),
+        ('COMMENT', r';.*'),
+        ('NEWLINE', r'\n'),
+        ('SPACE', r'\s+'),
         ('RIGHT', r'right'),
         ('LEFT', r'left'),
         ('INC', r'inc'),
         ('DEC', r'dec'),
+        ('ADD',r'add'),
+        ('SUB',r'sub'),
         ('PRINT', r'print'),
         ('READ', r'read'),
         ('DO',r'do'),
-        ('ADD',r'add'),
-        ('SUB',r'sub'),
         ('LOOP', r'loop'),
         ('DEF', r'def'),
-        ('NUMBER', r'\d+'),
-        ('PARENTESE_A', r'\('),
-        ('PARENTESE_F', r'\)'),
-        ('NAME', r'[-a-zA-Z]+'),
-        ('COMMENT', r';.*'),
-        ('NEWLINE', r'\n'),
-        ('SPACE', r'\s+')
+        ('PARENTHESIS_B', r'\('),
+        ('PARENTHESIS_A', r'\)')        
     ])
 
     #Seting tokens
-    tokens = ['RIGHT', 'LEFT', 'INC', 'DEC', 'SUB', 'ADD', 'NUMBER','PRINT', 'LOOP',
-                'READ','DEF','PARENTESE_F','PARENTESE_A','DO','NAME']
+    tokens = ['NUMBER','INC', 'DEC','SUB', 'ADD','RIGHT', 'LEFT','PRINT','DO','NAME','LOOP',
+                'READ','DEF','PARENTHESIS_A','PARENTHESIS_B']
 
-    operator = lambda type_op: (type_op)
     op = lambda op: (op)
-    opr = lambda op, num: (op, num)
+    operator = lambda type_op: (type_op)
 
+    #making parser
     parser = ox.make_parser([
-        ('program : PARENTESE_A expr PARENTESE_F', lambda x,y,z: y),
-        ('program : PARENTESE_A PARENTESE_F', lambda x,y: '()'),
+        ('program : PARENTHESIS_B expr PARENTHESIS_A', lambda x,y,z: y),
+        ('program : PARENTHESIS_B PARENTHESIS_A', lambda x,y: '()'),
         ('expr : operator expr', lambda x,y: (x,) + y),
         ('expr : operator', lambda x: (x,)),
         ('operator : program', op),
