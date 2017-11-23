@@ -32,10 +32,7 @@ def lexer_parser(source):
     
     operator = lambda type_op: (type_op)
     op = lambda op: (op)
-    opr = lambda op, num: (op, num)
-
-    program = source.read()
-    tokens = lexer(program)
+    opr = lambda op, num: (op, num)    
 
     parser = ox.make_parser([
         ('program : PARENTESE_A expr PARENTESE_F', lambda x,y,z: y),
@@ -58,9 +55,15 @@ def lexer_parser(source):
         ('operator : NUMBER', operator),
     ], tokens)
 
-    parser = ox.make_parser(parser_rules)
-    
-    
+    program = source.read()
+
+    tokens = lexer(program)
+
+    parser_tokens = [token for token in tokens if token.type != 'COMMENT' and token.type != 'SPACE']
+
+    tree = parser(parser_tokens)
+    print('\n\nTree\n\n')
+    print(tree,'\n\n')
 
 if __name__ == '__main__':
     lexer_parser()
