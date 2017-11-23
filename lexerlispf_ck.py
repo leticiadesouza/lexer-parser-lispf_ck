@@ -4,29 +4,40 @@ import click
 @click.command()
 @click.argument('source', type=click.File('r'))
 
-def entry_tree(source):
+def lexer_parser(source):    
 
-    program = source.read()
-
-    lexer_rules = [
-        ('NAME', r'[a-zA-Z]+'),
-        ('NUMBER', r'\d+'),
+    lexer = ox.make_lexer([
         ('RIGHT', r'right'),
         ('LEFT', r'left'),
-        ('OPEN_PAREN', r'\('),
-        ('CLOSE_PAREN', r'\)'),
-        ('INCR', r'incr'),
-        ('COMMA', r'\,')
-        ('SPACE', r'\s+'),
-        ('NEWLINE', r'\n'),
+        ('INC', r'inc'),
+        ('DEC', r'dec'),
+        ('PRINT', r'print'),
+        ('READ', r'read'),
+        ('DO',r'do'),
+        ('ADD',r'add'),
+        ('SUB',r'sub'),
+        ('LOOP', r'loop'),
         ('DEF', r'def'),
-    ]
+        ('NUMBER', r'\d+'),
+        ('PARENTESE_A', r'\('),
+        ('PARENTESE_F', r'\)'),
+        ('NAME', r'[-a-zA-Z]+'),
+        ('COMMENT', r';.*'),
+        ('NEWLINE', r'\n'),
+        ('SPACE', r'\s+')
+    ])
 
-    lexer = ox.make_lexer(lexer_rules)
+    tokens = ['RIGHT', 'LEFT', 'INC', 'DEC', 'SUB', 'ADD', 'NUMBER','PRINT', 'LOOP',
+                'READ','DEF','PARENTESE_F','PARENTESE_A','DO','NAME']
+    
+    operator = lambda type_op: (type_op)
+    op = lambda op: (op)
+    opr = lambda op, num: (op, num)
 
+    program = source.read()
     tokens = lexer(program)
 
-    parser_rules = [
+    parser = ox.make_parser([
         ('program : PARENTESE_A expr PARENTESE_F', lambda x,y,z: y),
         ('program : PARENTESE_A PARENTESE_F', lambda x,y: '()'),
         ('expr : operator expr', lambda x,y: (x,) + y),
@@ -45,11 +56,11 @@ def entry_tree(source):
         ('operator : SUB', operator),
         ('operator : NAME', operator),
         ('operator : NUMBER', operator),
-    ]
+    ], tokens)
 
     parser = ox.make_parser(parser_rules)
     
     
 
 if __name__ == '__main__':
-    entry_tree()
+    lexer_parser()
